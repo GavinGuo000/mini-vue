@@ -1,0 +1,23 @@
+{
+  "name": "mini-vue",
+  "version": "1.0.0",
+  "description": "一个用于学习 Vue3 实现原理的最小可运行实现（响应式 + 虚拟DOM + 编译器）",
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes serve . -l 5173",
+    "start": "npx --yes serve . -l 5173",
+    "test": "node scripts/test-render.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  },
+  "keywords": [
+    "vue",
+    "vue3",
+    "reactivity",
+    "virtual-dom",
+    "compiler",
+    "learning"
+  ],
+  "license": "MIT"
+}

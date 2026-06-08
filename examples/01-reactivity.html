@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>① 响应式系统 · mini-vue</title>
+    <style>
+      body {
+        font-family: -apple-system, "PingFang SC", sans-serif;
+        max-width: 720px;
+        margin: 40px auto;
+        padding: 0 20px;
+        color: #35495e;
+      }
+      h1 {
+        color: #42b883;
+      }
+      .panel {
+        background: #f6f8fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 16px 0;
+      }
+      button {
+        background: #42b883;
+        color: #fff;
+        border: 0;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-right: 8px;
+      }
+      pre {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 14px;
+        border-radius: 8px;
+        overflow: auto;
+        font-size: 13px;
+      }
+      a {
+        color: #42b883;
+      }
+    </style>
+  </head>
+  <body>
+    <p><a href="../index.html">← 返回首页</a></p>
+    <h1>① 响应式系统</h1>
+    <p>
+      下面的数字、计算值、watch 日志都没有手动更新 DOM——它们都是 effect
+      在数据变化时自动重新执行的结果。打开控制台还能看到 watch 的输出。
+    </p>
+
+    <div class="panel">
+      <p>count = <b id="count"></b></p>
+      <p>double (computed) = <b id="double"></b></p>
+      <p>nested.user.name = <b id="name"></b></p>
+      <button id="inc">count + 1</button>
+      <button id="rename">改名字</button>
+    </div>
+
+    <h3>watch 日志</h3>
+    <pre id="log"></pre>
+
+    <script type="module">
+      import { reactive, ref, computed, watch, effect } from "../src/index.js";
+
+      const state = reactive({
+        count: 0,
+        nested: { user: { name: "Vue" } },
+      });
+
+      const double = computed(() => state.count * 2);
+
+      const logEl = document.getElementById("log");
+      const lines = [];
+      function log(msg) {
+        lines.unshift(msg);
+        logEl.textContent = lines.slice(0, 8).join("\n");
+      }
+
+      // effect：用到 state.count / double / name 的地方会自动重渲染
+      effect(() => {
+        document.getElementById("count").textContent = state.count;
+        document.getElementById("double").textContent = double.value;
+        document.getElementById("name").textContent = state.nested.user.name;
+      });
+
+      // watch：侦听 count 的变化
+      watch(
+        () => state.count,
+        (newV, oldV) => log(`count: ${oldV} → ${newV}`)
+      );
+
+      // 深度 watch 整个 reactive 对象
+      watch(
+        state,
+        () => log("state（深度）发生了变化"),
+        { immediate: false }
+      );
+
+      document.getElementById("inc").onclick = () => state.count++;
+      document.getElementById("rename").onclick = () =>
+        (state.nested.user.name =
+          "Vue " + Math.floor(Math.random() * 100));
+    </script>
+  </body>
+</html>

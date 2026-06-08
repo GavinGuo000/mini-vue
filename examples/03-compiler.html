@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>③ 模板编译器 · mini-vue</title>
+    <style>
+      body {
+        font-family: -apple-system, "PingFang SC", sans-serif;
+        max-width: 760px;
+        margin: 40px auto;
+        padding: 0 20px;
+        color: #35495e;
+      }
+      h1 {
+        color: #42b883;
+      }
+      textarea {
+        width: 100%;
+        height: 150px;
+        font-family: monospace;
+        font-size: 13px;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccd4dc;
+      }
+      pre {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 14px;
+        border-radius: 8px;
+        overflow: auto;
+        font-size: 12px;
+      }
+      .demo {
+        background: #f6f8fa;
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-top: 10px;
+      }
+      button {
+        background: #42b883;
+        color: #fff;
+        border: 0;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      a {
+        color: #42b883;
+      }
+    </style>
+  </head>
+  <body>
+    <p><a href="../index.html">← 返回首页</a></p>
+    <h1>③ 模板编译器</h1>
+    <p>
+      下面这个组件直接写 <code>template</code> 字符串，由 mini-vue
+      的编译器编译成 render 函数后渲染。右侧可看到生成的 render 源码。
+    </p>
+
+    <h3>组件运行效果（template 驱动）</h3>
+    <div class="demo" id="app"></div>
+
+    <h3>该 template 编译出的 render 源码</h3>
+    <pre id="code"></pre>
+
+    <script type="module">
+      import { createApp, ref, reactive, compileToString } from "../src/index.js";
+
+      const template = `
+        <div>
+          <p>你好，{{ name }}！计数：{{ count }}</p>
+          <button @click="count++">+1</button>
+          <button @click="count--">-1</button>
+          <p v-if="count > 3">计数已经大于 3 啦 🎉</p>
+          <ul>
+            <li v-for="item in list">{{ item }}</li>
+          </ul>
+        </div>
+      `;
+
+      const App = {
+        template,
+        setup() {
+          // setup 返回的 ref 会被自动「脱 .value」，所以模板里直接写 count 即可
+          const count = ref(0);
+          const name = ref("mini-vue");
+          const list = reactive(["学响应式", "学虚拟DOM", "学编译器"]);
+          return { count, name, list };
+        },
+      };
+
+      createApp(App).mount("#app");
+
+      // 展示编译产物：template 编译出的 render 函数源码
+      document.getElementById("code").textContent = compileToString(template);
+    </script>
+  </body>
+</html>

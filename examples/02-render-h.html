@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>② 虚拟 DOM 渲染 · mini-vue</title>
+    <style>
+      body {
+        font-family: -apple-system, "PingFang SC", sans-serif;
+        max-width: 720px;
+        margin: 40px auto;
+        padding: 0 20px;
+        color: #35495e;
+      }
+      h1 {
+        color: #42b883;
+      }
+      button {
+        background: #42b883;
+        color: #fff;
+        border: 0;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin: 0 8px 8px 0;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      li {
+        padding: 6px 10px;
+        background: #f6f8fa;
+        margin: 4px 0;
+        border-radius: 6px;
+        list-style: none;
+      }
+      a {
+        color: #42b883;
+      }
+    </style>
+  </head>
+  <body>
+    <p><a href="../index.html">← 返回首页</a></p>
+    <h1>② 虚拟 DOM 渲染</h1>
+    <p>
+      这个组件用 <code>h()</code> 手写 render 函数。点击「打乱顺序」时，diff
+      会通过 key 复用已有 DOM 节点，只移动而不重建（可在 Elements
+      面板观察节点不被销毁重建）。
+    </p>
+    <div id="app"></div>
+
+    <script type="module">
+      import { createApp, h, ref, reactive } from "../src/index.js";
+
+      const App = {
+        setup() {
+          const count = ref(0);
+          const list = reactive([
+            { id: "a", text: "苹果" },
+            { id: "b", text: "香蕉" },
+            { id: "c", text: "樱桃" },
+            { id: "d", text: "西瓜" },
+          ]);
+
+          const shuffle = () => {
+            list.sort(() => Math.random() - 0.5);
+          };
+          const addItem = () => {
+            const id = Math.random().toString(36).slice(2, 6);
+            list.push({ id, text: "新水果-" + id });
+          };
+          const removeFirst = () => list.shift();
+
+          return { count, list, shuffle, addItem, removeFirst };
+        },
+        render(ctx) {
+          return h("div", null, [
+            h("p", null, [
+              h("button", { onClick: () => ctx.count++ }, `点击次数: ${ctx.count}`),
+            ]),
+            h("p", null, [
+              h("button", { onClick: ctx.shuffle }, "打乱顺序"),
+              h("button", { onClick: ctx.addItem }, "新增一项"),
+              h("button", { onClick: ctx.removeFirst }, "删除第一项"),
+            ]),
+            h(
+              "ul",
+              null,
+              ctx.list.map((item) =>
+                // key 让 diff 能正确复用 / 移动节点
+                h("li", { key: item.id }, `${item.id} - ${item.text}`)
+              )
+            ),
+          ]);
+        },
+      };
+
+      createApp(App).mount("#app");
+    </script>
+  </body>
+</html>

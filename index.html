@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mini-vue · 学习 Vue3 实现原理</title>
+    <style>
+      :root {
+        --green: #42b883;
+        --dark: #35495e;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: -apple-system, "Segoe UI", "PingFang SC", sans-serif;
+        background: #f6f8fa;
+        color: var(--dark);
+        line-height: 1.6;
+      }
+      header {
+        background: linear-gradient(135deg, var(--green), var(--dark));
+        color: #fff;
+        padding: 48px 24px;
+        text-align: center;
+      }
+      header h1 {
+        margin: 0 0 8px;
+        font-size: 40px;
+      }
+      header p {
+        margin: 0;
+        opacity: 0.9;
+      }
+      main {
+        max-width: 900px;
+        margin: -32px auto 48px;
+        padding: 0 24px;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+      }
+      a.card {
+        display: block;
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        text-decoration: none;
+        color: var(--dark);
+        box-shadow: 0 4px 18px rgba(53, 73, 94, 0.08);
+        transition: transform 0.15s, box-shadow 0.15s;
+        border: 1px solid #eef1f4;
+      }
+      a.card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(53, 73, 94, 0.15);
+      }
+      a.card h3 {
+        margin: 0 0 6px;
+        color: var(--green);
+      }
+      a.card p {
+        margin: 0;
+        font-size: 14px;
+        color: #66788a;
+      }
+      .tip {
+        background: #fff7e6;
+        border: 1px solid #ffe1a8;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 24px;
+        font-size: 14px;
+      }
+      code {
+        background: #eef1f4;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>mini-vue</h1>
+      <p>从零实现 Vue3 核心原理 · 响应式 + 虚拟 DOM + 编译器</p>
+    </header>
+    <main>
+      <div class="tip">
+        必须通过本地服务器打开（ES Module 限制）。在项目根目录运行
+        <code>npm run dev</code>，然后访问 <code>http://localhost:5173</code>。
+      </div>
+      <div class="cards">
+        <a class="card" href="./examples/01-reactivity.html">
+          <h3>① 响应式系统</h3>
+          <p>reactive / ref / computed / watch / effect 的依赖收集与派发更新</p>
+        </a>
+        <a class="card" href="./examples/02-render-h.html">
+          <h3>② 虚拟 DOM 渲染</h3>
+          <p>用 h() 手写 render，观察 diff 如何最小化 DOM 操作</p>
+        </a>
+        <a class="card" href="./examples/03-compiler.html">
+          <h3>③ 模板编译器</h3>
+          <p>template 字符串 → AST → render 函数的全过程</p>
+        </a>
+        <a class="card" href="./examples/04-todo-app.html">
+          <h3>④ 综合：TodoMVC</h3>
+          <p>把三大模块组合成一个完整的小应用</p>
+        </a>
+      </div>
+    </main>
+  </body>
+</html>
