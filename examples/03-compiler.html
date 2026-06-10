@@ -67,6 +67,9 @@
     <script type="module">
       import { createApp, ref, reactive, compileToString } from "../src/index.js";
 
+      // ---- 定义 template 字符串 ----
+      // 包含：插值 {{ }}、事件 @click、条件 v-if、列表 v-for
+      // 这些指令会在编译阶段被解析为 AST 并生成对应的 render 函数代码
       const template = `
         <div>
           <p>你好，{{ name }}！计数：{{ count }}</p>
@@ -79,10 +82,14 @@
         </div>
       `;
 
+      // ---- 定义组件：用 template 而非 render ----
+      // 运行时 setupComponent 时发现没有 render，
+      // 会调用 compileFn(template) 编译成 render 函数
       const App = {
         template,
         setup() {
-          // setup 返回的 ref 会被自动「脱 .value」，所以模板里直接写 count 即可
+          // setup 返回的 ref 会被 proxyRefs 自动「脱 .value」，
+          // 所以模板里直接写 count 而不是 count.value
           const count = ref(0);
           const name = ref("mini-vue");
           const list = reactive(["学响应式", "学虚拟DOM", "学编译器"]);
@@ -90,9 +97,12 @@
         },
       };
 
+      // 创建应用并挂载
       createApp(App).mount("#app");
 
-      // 展示编译产物：template 编译出的 render 函数源码
+      // ---- 调试：展示编译产物 ----
+      // compileToString 返回 template 编译后的 render 函数源码字符串，
+      // 可以看到 h()、_ctx.xxx、_toDisplayString 等生成的代码
       document.getElementById("code").textContent = compileToString(template);
     </script>
   </body>

@@ -80,6 +80,7 @@
     <div id="app"></div>
 
     <script type="module">
+      // 导入完整 API：应用创建、h 函数、响应式、计算属性
       import {
         createApp,
         h,
@@ -88,20 +89,31 @@
         computed,
       } from "../src/index.js";
 
-      // 子组件：单条 todo（演示 props 与 emit 父子通信）
+      // ================================================================
+      // 子组件：TodoItem —— 单条待办事项
+      // 演示父子组件通信：props 向下传数据，emit 向上发事件
+      // ================================================================
       const TodoItem = {
+        /**
+         * setup 直接返回 render 函数（简写形式）
+         * @param props  父组件传入的属性（响应式）
+         * @param emit   向父组件发射事件的函数
+         */
         setup(props, { emit }) {
           return () =>
             h(
               "div",
               { class: props.todo.done ? "todo done" : "todo" },
               [
+                // 复选框：点击触发 toggle 事件
                 h("input", {
                   type: "checkbox",
                   checked: props.todo.done,
                   onChange: () => emit("toggle"),
                 }),
+                // 待办文本
                 h("span", null, props.todo.text),
+                // 删除按钮：点击触发 remove 事件
                 h(
                   "button",
                   { class: "del", onClick: () => emit("remove") },
@@ -112,17 +124,22 @@
         },
       };
 
+      // ================================================================
+      // 根组件：App —— TodoMVC 主逻辑
+      // ================================================================
       const App = {
         setup() {
-          const input = ref("");
-          const filter = ref("all"); // all | active | done
-          const todos = reactive([
+          // ---- 响应式状态 ----
+          const input = ref("");          // 输入框内容
+          const filter = ref("all");      // 过滤条件：all | active | done
+          const todos = reactive([        // 待办列表（响应式数组）
             { id: 1, text: "学习响应式原理", done: true },
             { id: 2, text: "理解虚拟 DOM diff", done: false },
             { id: 3, text: "手写模板编译器", done: false },
           ]);
-          let uid = 4;
+          let uid = 4; // 自增 ID
 
+          // ---- 计算属性：根据过滤条件筛选可见的待办 ----
           const visible = computed(() =>
             todos.filter((t) =>
               filter.value === "all"
@@ -132,10 +149,12 @@
                 : !t.done
             )
           );
+          // 计算属性：未完成数量
           const remaining = computed(
             () => todos.filter((t) => !t.done).length
           );
 
+          // ---- 操作函数 ----
           const add = () => {
             const text = input.value.trim();
             if (!text) return;
@@ -143,9 +162,15 @@
             input.value = "";
           };
 
+          // 返回状态和函数（会被 proxyRefs 自动解包 ref）
           return { input, filter, todos, visible, remaining, add };
         },
+        /**
+         * render：用 h() 描述完整的 UI 结构
+         * ctx 包含 setupState 中的所有属性（已解包 ref）
+         */
         render(ctx) {
+          // 辅助函数：创建过滤按钮
           const filterBtn = (key, label) =>
             h(
               "button",
@@ -157,6 +182,7 @@
             );
 
           return h("div", null, [
+            // ---- 输入区 ----
             h("div", { class: "row" }, [
               h("input", {
                 type: "text",
@@ -169,12 +195,15 @@
               }),
               h("button", { onClick: ctx.add }, "添加"),
             ]),
+            // ---- 过滤按钮组 ----
             h("div", { class: "filters row" }, [
               filterBtn("all", "全部"),
               filterBtn("active", "未完成"),
               filterBtn("done", "已完成"),
             ]),
-            // 列表：每项是一个 TodoItem 组件，通过 key 复用
+            // ---- 待办列表：每项是一个 TodoItem 组件 ----
+            // 通过 key 让 diff 正确复用/移动 DOM 节点
+            // onToggle/onRemove 是父组件传入的事件处理器
             h(
               "div",
               null,
@@ -190,11 +219,13 @@
                 })
               )
             ),
+            // ---- 统计信息 ----
             h("p", { class: "meta" }, `还剩 ${ctx.remaining} 项未完成`),
           ]);
         },
       };
 
+      // ---- 创建应用并挂载 ----
       createApp(App).mount("#app");
     </script>
   </body>

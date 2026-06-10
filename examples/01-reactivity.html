@@ -62,15 +62,21 @@
     <pre id="log"></pre>
 
     <script type="module">
+      // 导入响应式系统的核心 API
       import { reactive, ref, computed, watch, effect } from "../src/index.js";
 
+      // ---- reactive：创建响应式对象 ----
+      // Proxy 拦截所有读写操作，包括嵌套对象的懒代理
       const state = reactive({
         count: 0,
         nested: { user: { name: "Vue" } },
       });
 
+      // ---- computed：计算属性，依赖变化时才重新计算，且有缓存 ----
+      // 内部是一个 lazy effect，第一次读 .value 才执行计算
       const double = computed(() => state.count * 2);
 
+      // ---- 日志工具 ----
       const logEl = document.getElementById("log");
       const lines = [];
       function log(msg) {
@@ -78,26 +84,32 @@
         logEl.textContent = lines.slice(0, 8).join("\n");
       }
 
-      // effect：用到 state.count / double / name 的地方会自动重渲染
+      // ---- effect：副作用函数 ----
+      // 执行时会读取 state.count、double.value、state.nested.user.name，
+      // 从而自动收集这三个依赖。当任一依赖变化时，effect 会自动重新执行，
+      // 实现「数据变 → DOM 自动更新」。
       effect(() => {
         document.getElementById("count").textContent = state.count;
         document.getElementById("double").textContent = double.value;
         document.getElementById("name").textContent = state.nested.user.name;
       });
 
-      // watch：侦听 count 的变化
+      // ---- watch：侦听特定数据的变化 ----
+      // getter 函数：精确侦听 state.count
       watch(
         () => state.count,
         (newV, oldV) => log(`count: ${oldV} → ${newV}`)
       );
 
-      // 深度 watch 整个 reactive 对象
+      // 深度 watch：侦听整个 reactive 对象，
+      // traverse() 会递归访问所有属性以收集深层依赖
       watch(
         state,
         () => log("state（深度）发生了变化"),
         { immediate: false }
       );
 
+      // ---- 事件绑定：修改响应式数据，触发上述自动更新 ----
       document.getElementById("inc").onclick = () => state.count++;
       document.getElementById("rename").onclick = () =>
         (state.nested.user.name =
