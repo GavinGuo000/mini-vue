@@ -27,6 +27,12 @@ const effectStack = [];
 //   dep:       Set<ReactiveEffect>
 const targetMap = new WeakMap();
 
+// ReactiveEffect {
+//   fn: componentUpdate,        // 核心：组件渲染函数 / watch回调 / computed求值函数
+//   scheduler: () => queueJob(instance.update), // 调度器，数据变化不走同步执行，推入异步队列
+//   deps: [Set(), Set(), Set()],// 反向依赖：记录自己被哪些dep收集，用于cleanup清理
+//   active: true                // 是否激活，stop后变为false
+// }
 export class ReactiveEffect {
   constructor(fn, scheduler = null) {
     this.fn = fn;

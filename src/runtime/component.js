@@ -84,6 +84,45 @@ export function registerCompiler(compile) {
   compileFn = compile;
 }
 
+// instance长什么样
+
+// const Counter = {
+//   template: `<div>{{ count }}</div>`,
+//   setup(props, { emit }) {
+//     const count = ref(0)
+//     onMounted(() => console.log('挂载'))
+//     return { count }
+//   }
+// }
+
+//  instance = {
+//   vnode: compVNode,
+//   type: Counter,
+
+//   props: reactive({ onAdd: () => {} }),
+//   attrs: {},
+
+//   setupState: proxyRefs({ count: RefImpl{ value: 0 } }),
+
+//   ctx: new Proxy(instance, { get/set }),
+
+//   subTree: null, // 初次渲染后变成 h("div", null, count) VNode
+
+//   isMounted: false,
+
+//   update: null, // 后续赋值 effect.run 绑定的更新函数
+
+//   emit: (event, ...args) => {
+//     const handler = props[`on${首字母大写事件名}`]
+//     handler && handler(...args)
+//   },
+
+//   bm: [],
+//   m: [() => console.log('挂载')], // onMounted 存入这里
+//   bu: [],
+//   u: []
+// }
+
 /**
  * setup 组件：初始化 props、执行 setup()、确定 render 函数、创建渲染上下文
  *
